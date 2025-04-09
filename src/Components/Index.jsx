@@ -71,39 +71,64 @@ function Index() {
 };
 
     return (
-        <div>
+        <div className=''>
             <nav className="fixed w-full top-0">
                 <div className="w-full bg-blue-500 p-3">
                     <h3 className="text-gray-100">Dashboard</h3>
                 </div>
             </nav>
 
-            <div className="p-5 pt-20">
-                <input type="text"
-                 value={searchQuery}
-                    onChange={handleSearch}
-                    className="border p-1 mr-4 rounded"
-                    placeholder="Search by Customer"
-                />
-                 <input
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                    className="border p-1 rounded mr-4"
-                    placeholder="From Date"
-                />
-                <input
-                    type="date"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="border  rounded p-1"
-                    placeholder="To Date"
-                />
-                <button onClick={handleSearchAndFilter} className="border p-1 rounded-xl ps-3 pe-3 bg-blue-500 text-white ml-4">
-                    Search
-                </button>
+            <div className=" container mx-auto p-5 pt-20">
+            <div className="">
+            <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search by Customer</label>
+            <input
+                id="search"
+                type="text"
+                value={searchQuery}
+                onChange={handleSearch}
+                className="border p-1 rounded w-full md:w-72"
+                placeholder="Search by Customer"
+            />
+    <div className="flex flex-row md:flex-row items-start md:items-center">
+        <div className="mb-4 md:mb-0 md:mr-4">
+           
+        </div>
+
+        <div className="mb-4 md:mb-0 md:mr-4">
+            <label htmlFor="fromDate" className="block text-sm font-medium text-gray-700">From Date</label>
+            <input
+                id="fromDate"
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="border p-1 rounded w-full md:w-72"
+                placeholder="From Date"
+            />
+        </div>
+
+        <div className="mb-4 md:mb-0 md:mr-4">
+            <label htmlFor="toDate" className="block text-sm font-medium text-gray-700">To Date</label>
+            <input
+                id="toDate"
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="border p-1 rounded w-full md:w-72"
+                placeholder="To Date"
+            />
+        </div>
+
+        <button
+            onClick={handleSearchAndFilter}
+            className="border p-1 rounded-xl bg-blue-500 text-white ml-4 w-20 md:w-20 mt-4 md:mt-4"
+        >
+            Search
+        </button>
+    </div>
+</div>
+
                 <h1 className="text-xl font-bold mb-3 mt-4">Sales Invoice</h1>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto text-sm">
                     <table className="min-w-full border-collapse">
                         <thead>
                             <tr className="bg-blue-100">
@@ -125,7 +150,7 @@ function Index() {
                                     {sortConfig.key === 'dates' && (sortConfig.direction === 'asc' ? ' ↑' : ' ↓')}
                                 </th>
                                 <th
-                                    className="border p-2 cursor-pointer"
+                                    className="border p-2 cursor-pointer hidden sm:block"
                                     onClick={() => handleSort('quantity')}
                                 >
                                     Quantity
@@ -145,7 +170,7 @@ function Index() {
                                     <td className="border p-2">{item.salesId}</td>
                                     <td className="border p-2">{item.Customer}</td>
                                     <td className="border p-2">{item.dates}</td>
-                                    <td className="border p-2">{item.quantity}</td>
+                                    <td className="border p-2 hidden sm:block">{item.quantity}</td>
                                     <td className="border p-2">{item.Amount}</td>
                                 </tr>
                             ))}
