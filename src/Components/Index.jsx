@@ -82,27 +82,27 @@ function Index() {
                 <input type="text"
                  value={searchQuery}
                     onChange={handleSearch}
-                    className="border p-2 mr-4"
+                    className="border p-1 mr-4 rounded"
                     placeholder="Search by Customer"
                 />
                  <input
                     type="date"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
-                    className="border p-2 mr-4"
+                    className="border p-1 rounded mr-4"
                     placeholder="From Date"
                 />
                 <input
                     type="date"
                     value={toDate}
                     onChange={(e) => setToDate(e.target.value)}
-                    className="border p-2"
+                    className="border  rounded p-1"
                     placeholder="To Date"
                 />
-                <button onClick={handleSearchAndFilter} className="border p-2 bg-blue-500 text-white ml-4">
+                <button onClick={handleSearchAndFilter} className="border p-1 rounded-xl ps-3 pe-3 bg-blue-500 text-white ml-4">
                     Search
                 </button>
-                <h1 className="text-xl font-bold mb-4">Sales Invoice</h1>
+                <h1 className="text-xl font-bold mb-3 mt-4">Sales Invoice</h1>
                 <div className="overflow-x-auto">
                     <table className="min-w-full border-collapse">
                         <thead>
