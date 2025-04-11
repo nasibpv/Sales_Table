@@ -11,7 +11,7 @@ function App() {
           <Router>
             <NavBar/>
               <Routes>
-                <Route path='https://sales-table-orpin.vercel.app/' element={<Index />}></Route>
+                <Route path='https://sales-table-orpin.vercel.app' element={<Index />}></Route>
                 <Route path='/invoice/:id' element={<ViewInvoice />}></Route>
               </Routes>
           </Router>
