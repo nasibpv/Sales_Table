@@ -1,14 +1,14 @@
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { SalesDataContext } from '../context/SalesDataContext';
 
 function ViewInvoice() {
   const { id } = useParams();
-  
+  const location=useNavigate()
   const { salesData } = useContext(SalesDataContext);
     
   const invoice = salesData.find(item => item.transactionId === id);
-  console.log(invoice);
+//   console.log(invoice);
   
 
   if (!invoice) return <p>Invoice not found.</p>;
@@ -19,7 +19,7 @@ function ViewInvoice() {
           <div className="flex justify-between items-center mb-6 ">
               <h2 className="text-2xl font-bold">Invoice Details</h2>
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => location(-1)}
                 className="text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
               >
                 Close

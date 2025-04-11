@@ -110,8 +110,8 @@ function Index() {
             </table>
 
             {/* Pagination */}
-            <div className="flex justify-between mt-4 items-center">
-                <div>
+            <div className="flex justify-between  mt-4 items-center">
+                <div className='hidden w-[40%] sm:inline'>
                     <label>Page Size: </label>
                     <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))} className='dark:bg-gray-700 text-lg'>
                         {[10, 25, 50, 100].map(size => (
@@ -120,15 +120,15 @@ function Index() {
                     </select>
                 </div>
 
-                <div className='text-lg'>  
-                    Page {currentPage} of {totalPages}
+                <div className='text-lg xs:w-[100%] xs:text-center'>  
+                    <span className='hidden sm:inline'>Page {currentPage} of {totalPages}</span>
                     <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)}>⏮</button>
                     <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>◀</button>
                     <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>▶</button>
                     <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}>⏭</button>
                 </div>
 
-                <div className='text-lg'>Total Records: {totalRecords}</div>
+                <div className='text-lg w-[40%] hidden sm:inline'>Total Records: {totalRecords}</div>
             </div>
         </div>
     );
