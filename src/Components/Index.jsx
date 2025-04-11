@@ -1,182 +1,134 @@
-import React, { useState } from 'react';
+import { useContext } from 'react';
+import { SalesDataContext } from '../context/SalesDataContext';
 
 function Index() {
-    const data = Array.from({ length: 40 }, (_, index) => {
-        const startDate = new Date(2025, 0, 1); 
-        const endDate = new Date(2025, 11, 31); 
-        const randomDate = new Date(startDate.getTime() + Math.random() * (endDate - startDate));
-
-        return {
-            salesId:`IN00${index + 1}`,
-            Customer: `Cus${index + 1}`,
-            quantity: Math.floor(Math.random() * 50) + 1,
-            Amount: (Math.floor(Math.random() * 100) + 1) * 10,
-            dates: randomDate.toISOString().split('T')[0],
-        };
-    });
-
-    const [sortedData, setSortedData] = useState(data);
-    const [filteredData, setFilteredData] = useState(data);
-    const [searchQuery, setSearchQuery] = useState(''); 
-    const [sortConfig, setSortConfig] = useState({ key: 'salesId', direction: 'asc' });
-    const [fromDate, setFromDate] = useState('');
-    const [toDate, setToDate] = useState('');
+    const {
+        loading, paginatedData, sortConfig, setSortConfig,
+        currentPage, setCurrentPage, totalPages,
+        pageSize, setPageSize, totalRecords, dateRange, statusFilter,
+        setDateRange, setStatusFilter
+,searchTerm,setSearchTerm    } = useContext(SalesDataContext);
 
     const handleSort = (key) => {
-        const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
-        const sorted = [...filteredData].sort((a, b) => {
-            if (key === 'dates') {
-                // For date sorting, compare as Date objects
-                return direction === 'asc'
-                    ? new Date(a[key]) - new Date(b[key])
-                    : new Date(b[key]) - new Date(a[key]);
-            }
-            if (key === 'Amount' || key === 'quantity' || key === 'salesId') {
-                // For numeric fields, compare values directly
-                return direction === 'asc' ? a[key] - b[key] : b[key] - a[key];
-            }
-            // For string fields (like Customer or Product)
-            return direction === 'asc'
-                ? a[key].localeCompare(b[key])
-                : b[key].localeCompare(a[key]);
-        });
-
-        setFilteredData(sorted);
-        setSortConfig({ key, direction });
+        setSortConfig(prev => ({
+            key,
+            direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+        }));
     };
-    const handleSearchAndFilter = () => {
 
-      const filtered = data.filter(item => {
-          const matchesSearchQuery = item.Customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              item.Product.toLowerCase().includes(searchQuery.toLowerCase());
+    const getArrow = (key) => {
+        if (sortConfig.key !== key) return '';
+        return sortConfig.direction === 'asc' ? ' ↑' : ' ↓';
+    };
 
-          const matchesDateRange = (!fromDate || new Date(item.dates) >= new Date(fromDate)) &&
-              (!toDate || new Date(item.dates) <= new Date(toDate));
-
-          return matchesSearchQuery && matchesDateRange;
-      });
-      if(fromDate&&toDate){
-        setFilteredData(filtered);
-        setFromDate('')
-        setToDate('')
-      }
-  };
-  const handleSearch = (event) => {
-    const query = event.target.value.toLowerCase();
-    setSearchQuery(query);
-    const filtered = data.filter(item =>
-        item.Customer.toLowerCase().includes(query) 
-    );
-    setFilteredData(filtered);
-};
+    if (loading) return <p>Loading...</p>;
 
     return (
-        <div className=''>
-            <nav className="fixed w-full top-0">
-                <div className="w-full bg-blue-500 p-3">
-                    <h3 className="text-gray-100">Dashboard</h3>
+        <div className='p-2 bg-white text-black dark:bg-gray-800 dark:text-white min-h-screen'> 
+            <h2 className="text-2xl font-semibold mb-2 mt-2">Sales Table</h2>
+
+            <div className="mb-2  gap-3  grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 lg:continer  p-4 w-full">
+            <div className='mb-3 md:mb-0 md:mr-4'>
+                <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search</label>
+                <input
+    id="search"
+    type="text"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="border p-1 rounded w-full md:w-72 dark:bg-gray-700 dark:text-white"
+    placeholder="Search by any field"
+/>
                 </div>
-            </nav>
-
-            <div className=" container mx-auto p-5 pt-20">
-            <div className="">
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700">Search by Customer</label>
-            <input
-                id="search"
-                type="text"
-                value={searchQuery}
-                onChange={handleSearch}
-                className="border p-1 rounded w-full md:w-72"
-                placeholder="Search by Customer"
-            />
-    <div className="flex flex-row md:flex-row items-start md:items-center">
-        <div className="mb-4 md:mb-0 md:mr-4">
-           
-        </div>
-
-        <div className="mb-4 md:mb-0 md:mr-4">
-            <label htmlFor="fromDate" className="block text-sm font-medium text-gray-700">From Date</label>
-            <input
-                id="fromDate"
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="border p-1 rounded w-full md:w-72"
-                placeholder="From Date"
-            />
-        </div>
-
-        <div className="mb-4 md:mb-0 md:mr-4">
-            <label htmlFor="toDate" className="block text-sm font-medium text-gray-700">To Date</label>
-            <input
-                id="toDate"
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="border p-1 rounded w-full md:w-72"
-                placeholder="To Date"
-            />
-        </div>
-
-        <button
-            onClick={handleSearchAndFilter}
-            className="border p-1 rounded-xl bg-blue-500 text-white ml-4 w-20 md:w-20 mt-4 md:mt-4"
-        >
-            Search
-        </button>
-    </div>
-</div>
-
-                <h1 className="text-xl font-bold mb-3 mt-4">Sales Invoice</h1>
-                <div className="overflow-x-auto text-sm">
-                    <table className="min-w-full border-collapse">
-                        <thead>
-                            <tr className="bg-blue-100">
-                                <th className="border p-2 cursor-pointer" onClick={() => handleSort('salesId')}>
-                                    Invoice No
-                                    {sortConfig.key === 'salesId' && (sortConfig.direction === 'asc' ? ' ↑' : ' ↓')}
-                                </th>
-                                <th
-                                    className="border p-2 cursor-pointer"
-                                    onClick={() => handleSort('Customer')}
-                                >
-                                    Customer Name
-                                </th>
-                                <th
-                                    className="border p-2 cursor-pointer"
-                                    onClick={() => handleSort('dates')}
-                                >
-                                    Date
-                                    {sortConfig.key === 'dates' && (sortConfig.direction === 'asc' ? ' ↑' : ' ↓')}
-                                </th>
-                                <th
-                                    className="border p-2 cursor-pointer hidden sm:block"
-                                    onClick={() => handleSort('quantity')}
-                                >
-                                    Quantity
-                                </th>
-                                <th
-                                    className="border p-2 cursor-pointer"
-                                    onClick={() => handleSort('Amount')}
-                                >
-                                    Amount
-                                    {sortConfig.key === 'Amount' && (sortConfig.direction === 'asc' ? ' ↑' : ' ↓')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredData?.map((item) => (
-                                <tr key={item.salesId} className="odd:bg-gray-50">
-                                    <td className="border p-2">{item.salesId}</td>
-                                    <td className="border p-2">{item.Customer}</td>
-                                    <td className="border p-2">{item.dates}</td>
-                                    <td className="border p-2 hidden sm:block">{item.quantity}</td>
-                                    <td className="border p-2">{item.Amount}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="mb-3 md:mb-0 md:mr-4">
+                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                    <select
+                        id="status"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value||'')}
+                        className="border p-1.5 rounded w-full md:w-64 dark:bg-gray-700 dark:text-white"
+                    >
+                        <option value="All">All</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Canceled">Canceled</option>
+                    </select>
                 </div>
+                <div className="mb-3 md:mb-0 md:mr-4">
+                    <label htmlFor="fromDate" className="block text-sm font-medium text-gray-700">From Date</label>
+                    <input
+                        id="fromDate"
+                        type="date"
+                        value={dateRange.from}
+                        onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                        className="border p-1 rounded w-full md:w-64 dark:bg-gray-700 dark:text-white"
+                        placeholder="From Date"
+                    />
+                </div>
+
+                <div className="mb-3 md:mb-0 md:mr-4">
+                    <label htmlFor="toDate" className="block text-sm font-medium text-gray-700">To Date</label>
+                    <input
+                        id="toDate"
+                        type="date"
+                        value={dateRange.to}
+                        onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                        className="border p-1 rounded w-full md:w-64 dark:bg-gray-700 dark:text-white"
+                        placeholder="To Date"
+                    />
+                </div>
+            </div>
+
+            <table className="min-w-full border">
+                <thead>
+                    <tr className="bg-gray-100 dark:bg-gray-700 text-black dark:text-white">
+                        <th onClick={() => handleSort('sale')} className="cursor-pointer">Invoice No {getArrow('salesId')}</th>
+                        <th onClick={() => handleSort('date')} className="cursor-pointer hidden sm:inline">Date {getArrow('dates')}</th>
+                        <th onClick={() => handleSort('customerName')} className="cursor-pointer">Customer {getArrow('customerName')}</th>
+                        <th onClick={() => handleSort('product')} className="cursor-pointer">Product {getArrow('product')}</th>
+                        <th onClick={() => handleSort('quantity')} className="cursor-pointer hidden sm:table-cell">Qty {getArrow('quantity')}</th>
+                        <th onClick={() => handleSort('unitPrice')} className="cursor-pointer hidden sm:table-cell">Unit Price {getArrow('unitPrice')}</th>
+                        <th onClick={() => handleSort('amount')} className="cursor-pointer hidden sm:table-cell">Total Amount {getArrow('amount')}</th>
+                        <th onClick={() => handleSort('status')} className="cursor-pointer hidden sm:inline">Status {getArrow('status')}</th>
+                        <th className="cursor-pointer">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {paginatedData.map(item => (
+                        <tr key={item.transactionId}>
+                            <td className='text-center'>{item.transactionId}</td>
+                            <td className='hidden sm:inline'>{item.date}</td>
+                            <td>{item.customerName}</td>
+                            <td className=''>{item.product}</td>
+                            <td  className='text-center hidden sm:table-cell'>{item.quantity}</td>
+                            <td className='text-end hidden sm:table-cell'>{item.unitPrice}</td>
+                            <td className='text-end hidden sm:table-cell'>{item.totalAmount}</td>
+                            <td className='text-center hidden sm:inline'>{item.status}</td>
+                            <td className='txet-center'><a href={`/invoice/${item.transactionId}`} className='text-center text-blue-500'>View</a></td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            {/* Pagination */}
+            <div className="flex justify-between mt-4 items-center">
+                <div>
+                    <label>Page Size: </label>
+                    <select value={pageSize} onChange={e => setPageSize(Number(e.target.value))} className='dark:bg-gray-700 text-lg'>
+                        {[10, 25, 50, 100].map(size => (
+                            <option key={size} value={size}>{size}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className='text-lg'>  
+                    Page {currentPage} of {totalPages}
+                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)}>⏮</button>
+                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>◀</button>
+                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>▶</button>
+                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}>⏭</button>
+                </div>
+
+                <div className='text-lg'>Total Records: {totalRecords}</div>
             </div>
         </div>
     );
